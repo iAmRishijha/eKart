@@ -1,0 +1,82 @@
+{% extends "base/base.html" %}
+
+{% block body %}
+<div class="container">
+<div class="col my-4">
+    <h2>Enter you shipping address</h2>
+    <form class="row g-3" method="post" action="/shop/checkout/">{% csrf_token %}
+
+        <div class="col-md-6">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" required name="name" id="name">
+        </div>
+        <div class="col-md-6">
+            <label for="phone" class="form-label">Phone</label>
+            <input type="tel" class="form-control" required name="phone" id="phone">
+        </div>
+        <div class="col-12">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" required name="email" id="email">
+        </div>
+        <div class="col-12">
+            <label for="address1" class="form-label">Address 1</label>
+            <input type="text" class="form-control" required name="address1" id="address1" placeholder="1234 Main St">
+        </div>
+        <div class="col-12">
+            <label for="address2" class="form-label">Address 2</label>
+            <input type="text" class="form-control" required name="address2" id="address2"
+                placeholder="Appartment, Floor">
+        </div>
+        <div class="col-md-6">
+            <label for="city" class="form-label">City</label>
+            <input type="text" class="form-control" required name="city" id="city">
+        </div>
+        <div class="col-md-4">
+            <label for="state" class="form-label">State</label>
+            <input type="text" class="form-control" required name="state" id="state">
+        </div>
+        <div class="col-md-2">
+            <label for="zipcode" class="form-label">Zip</label>
+            <input type="text" class="form-control" required name="zipcode" id="zipcode">
+        </div>
+        <div class="col-12">
+            <button id="rzp-button1" type="submit" class="btn btn-success">Pay Now</button>
+        </div>
+    </form>
+</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {
+        "key": "rzp_test_vimRBcr4AwH9MN",
+        "amount": "{{payemnt.amount}}",
+        "currency": "INR",
+        "name": "eKart",
+        "description": 'Purchase',
+        "order_id": "{{payment.id}}",
+        //   callback_url: "{{ callback_url }}",
+        // "redirect": true,
+        "handler": function(response) {
+            window.location.href = `http://127.0.0.1:8000/accounts/success/?order_id={{payment.id}}`
+           },
+    };
+    var rzp1 = new Razorpay(options);
+    // rzp1.on('payment.failed', function(response) {
+    //     alert(response.error.code);
+    //     alert(response.error.description);
+    //     alert(response.error.source);
+    //     alert(response.error.step);
+    //     alert(response.error.reason);
+    //     alert(response.error.metadata.order_id);
+    //     alert(response.error.metadata.payment_id);
+    // });
+    document.getElementById("rzp-button1").onclick = function (e) {
+        rzp1.open();
+        e.preventDefault();
+    };
+</script>
+
+{% endblock %}
