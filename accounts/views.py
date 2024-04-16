@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect, redirect, HttpRespons
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from .models import Profile, Cart, CartItems
+from .models import Profile, Cart, CartItems, OrderDetail, OrderUpdate
 from products.models import Product, SizeVariant, ColorVariant, Coupon
 import razorpay
 from django.conf import settings
@@ -155,26 +155,11 @@ def cart_page(request):
         cart.save()
 
         cart_items = CartItems.objects.filter(cart = cart)
-
-        # client = razorpay.Client(auth = (settings.KEY, settings.SECRET))
-        # payment = client.order.create({'amount': total_price*100, 'currency':'INR', 'payment_capture': '1'})
-        # cart.razorpay_order_id = payment['id']
-        # cart.save()
         params = {'cart' : cart, 'cart_items' : cart_items, 'total_price' : total_price} 
         return render(request, "accounts/cart.html", params)
     except Exception as e:
         return render(request, "accounts/cart.html")
-        
-    
-    # for item in cart_items:
-    #     print(item.product)
-    #     print(item.color)
-    #     print(item.size)
-    #     print(item.get_product_price())
-    #     print(item.product.slug)
-    #     print("*********")
-    # total_price = cart.get_cart_total()
-    # print(total_price)
+
 
     
 
@@ -186,6 +171,7 @@ def remove_coupon(request, cart_id):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 def checkout(request):
+    # print(request.method)
     try:
         cart = Cart.objects.get(is_paid = False, user = request.user )
         total_price = cart.order_price
@@ -194,6 +180,21 @@ def checkout(request):
         cart.razorpay_order_id = payment['id']
         cart.save()
         params = {'payment': payment}
+
+        if request.method == 'POST':
+            name = request.POST.get('name')
+            phone = request.POST.get('phone')
+            address = request.POST.get('address1')+", "+request.POST.get("address2")
+            email = request.POST.get("email")
+            city = request.POST.get('city')
+            state = request.POST.get('state')
+            zip = request.POST.get('zipcode')
+            
+            details = OrderDetail(order_id = cart.razorpay_order_id, name = name, phone = phone, address = address, email = email, city = city, state = state, zip = zip)
+            details.save()
+            
+            return HttpResponseRedirect('http://127.0.0.1:8000/accounts/success/' + '?order_id=' + str(payment['id']))
+        
         return render(request, "accounts/checkout.html", params)
     except Exception as e:
         return render(request, 'accounts/cart.html')
@@ -204,4 +205,20 @@ def success(request):
     cart = Cart.objects.get(razorpay_order_id = order_id)
     cart.is_paid = True
     cart.save()
-    return HttpResponse('Payment Success')
+
+    update = OrderUpdate(order_id=order_id, update_description = "Order Placed")
+    update.save()
+    return HttpResponse("Payment success")
+
+
+
+def orderhistory(request):
+    cart_paid = Cart.objects.filter(user = request.user, is_paid = True).order_by('-updated_at')
+    return render(request, 'accounts/orders.html',  {"paid_items" : cart_paid})
+
+
+def tracker(request, order_id):
+    updates = OrderUpdate.objects.filter(order_id = order_id).order_by("-updated_at")
+    shipping_details = OrderDetail.objects.get(order_id = order_id)
+    params = {'shipping_details': shipping_details, 'updates': updates}
+    return render(request, 'accounts/tracker.html', params)

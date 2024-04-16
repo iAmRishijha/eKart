@@ -3,22 +3,26 @@
 {% block body %}
 
 {% for category, products in categorized_products.items %}
+{% if products %}
 <div class="container mt-2 pt-5">
     <h2>Best Sellers in {{ category.category_name }}</h2>
     <div class="row">
         {% for product in products %}
+        {% if forloop.counter < 5 %}
         <div class="col-md-3">
             <figure class="card card-product-grid">
                 <div class="img-wrap"> <img src="/media/{{product.product_images.first.image}}"> </div>
                 <figcaption class="info-wrap border-top">
-                    <a href="{% url 'get_product' product.slug %}" class="title"><b>{{product.product_name}}</b></a>
-                    <div class="price mt-2">${{product.price}}</div> <!-- price-wrap.// -->
+                    <a href="{% url 'get_product' product.slug %}" class="title"><b>{% if product.product_name|length < 28 %}{{product.product_name}}{% else %}{{product.product_name|slice:":25"}} ...{% endif %}</b></a>
+                    <div class="price mt-2">₹{{product.price}}</div> <!-- price-wrap.// -->
                 </figcaption>
             </figure> <!-- card // -->
         </div> <!-- col.// -->
+        {% endif %}
         {% endfor %}
     </div>
 </div>
+{% endif %}
 {% endfor %}
 
 {% endblock %}

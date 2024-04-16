@@ -1,0 +1,53 @@
+{% extends "base/base.html" %}
+
+{% block body %}
+
+<div class="container my-4">
+    <div class="row">
+        <!-- Left side: Shipping Details -->
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header">
+                    Shipping Details
+                </div>
+                <div class="card-body">
+                    <!-- Shipping details content goes here -->
+                    <p>Name: {{shipping_details.name}}</p>
+                    <p>Phone: {{shipping_details.phone}}</p>
+                    <p>Email: {{shipping_details.email}}</p>
+                    <p>Address: {{shipping_details.address}}</p>
+                    <p>City: {{shipping_details.city}}</p>
+                    <p>State: {{shipping_details.state}}</p>
+                    <p>Zip: {{shipping_details.zip}}</p>
+                    <!-- Add more shipping details as needed -->
+                </div>
+            </div>
+        </div>
+        <!-- Right side: Order Updates -->
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header">
+                    Order Updates
+                </div>
+                <div class="card-body">
+                    <!-- Order updates content goes here -->
+                    {% for update in updates %}
+                    <div class="row">
+                        <div class="col-8">
+                            {{update.update_description}}
+                        </div>
+                        <div class="col">
+                            {{update.updated_at}}
+                            <!-- <p>{{update.updated_at.date}}{{update.updated_at.time}}</p> -->
+                        </div>
+                    </div>
+                    <hr>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

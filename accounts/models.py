@@ -93,3 +93,18 @@ class CartItems(BaseModel):
     
     def __str__(self) -> str:
         return self.product.product_name
+    
+
+class OrderDetail(BaseModel):
+    order_id = models.CharField(max_length=255, null=True, blank=True)
+    name = models.CharField(max_length=50)
+    phone = models.IntegerField()
+    address = models.CharField(max_length=500)
+    email = models.EmailField(max_length=500)
+    city = models.CharField(max_length=15)
+    state = models.CharField(max_length=15)
+    zip = models.CharField(max_length=6)
+
+class OrderUpdate(BaseModel):
+    order_id = models.CharField(max_length=255, null=True, blank=True)
+    update_description = models.TextField(max_length=1000)

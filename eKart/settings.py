@@ -66,6 +66,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'eKart.context_processors.categories',
             ],
         },
     },
@@ -142,9 +143,8 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "23rishijha@gmail.com"
-EMAIL_HOST_PASSWORD = "ymsterjyhtscnqyb"
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = ""
 
-
-KEY = 'rzp_test_vimRBcr4AwH9MN'
-SECRET = 'qmfVKoBTxYASmaiBetprXlxw'
+KEY = ''
+SECRET = ''
