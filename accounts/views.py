@@ -211,7 +211,7 @@ def success(request):
     return HttpResponse("Payment success")
 
 
-
+@login_required
 def orderhistory(request):
     cart_paid = Cart.objects.filter(user = request.user, is_paid = True).order_by('-updated_at')
     return render(request, 'accounts/orders.html',  {"paid_items" : cart_paid})
